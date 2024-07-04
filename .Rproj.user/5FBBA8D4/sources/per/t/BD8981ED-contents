@@ -1,0 +1,131 @@
+# Obtaining missing species in FFB ----------------------------------------
+
+##github repository
+devtools::install_github("barnabywalker/kewr")
+
+#' @title IPNI BHL and doi link
+
+#' @description This function obtains the BHL and DOI link from IPNI
+ 
+#' @param df A dataframe containing the latest version of Flora de Brasil species. In can be with a subset of families
+
+#' @returns A dataframe containing the species in Flora de Brasil present in IPNI with or without a bhl link
+#' 
+#' @import kewr
+#' @import tidyverse
+#' @import readr
+#' @import readxl
+#' @import plyr
+#' @import writexl
+ 
+
+BHL_function <- function(df){
+  
+  ##completing dataframe information (auxiliary function)
+  
+  plants_bra = complete_df(df = df)
+  
+  ##dataset with only species with hifen
+  plants_hifen =
+         plants_bra[which(stringr::str_detect(plants_bra$taxon_name,
+                                               "-")), ]
+  ##removing hifen
+  plants_hifen$taxon_name =  stringr::str_replace(plants_hifen$taxon_name, 
+                                                          "-", "")
+  ## joining datasets 
+  plants_bra <- rbind(plants_bra, plants_hifen)
+  
+  ##family names
+  fam_names <- unique(plants_bra$Family)
+  
+  ######creating list for keeping the missing species within each family according to IPNI
+  list_fam_IPNI <- vector("list", length = length(fam_names))
+  
+  ##naming
+  names(list_fam_IPNI) <- fam_names
+  
+  
+###################IPNI######################################
+  
+##loop for finding missing species in the Flora de Brasil
+  for(i in seq_along(fam_names)){
+    
+    ###tryCatch for handling the missing families in IPNI
+    tryCatch({
+      ##calling the species within families in IPNI
+      ipni_df = tidy(kewr::search_ipni(list(family = fam_names[i],
+                                      distribution = "Brazil"),
+                                 limit = 1000,
+                                 filters = c("species")))
+     
+    }, error = function(e){
+      message("Absent family in IPNI")
+      print(e)
+    })
+    
+    ##IPNI species present in Flora de Brasil
+    ipni_present = ipni_df[which(ipni_df$name %in% plants_bra$taxon_name), ]
+    
+    
+  
+    ##if else statement for not saving empty dfs
+    if(dim(ipni_present)[1] == 0){
+      print("No species present in IPNI")
+      
+      list_fam_IPNI[[i]] = NULL
+      
+    } else{
+      
+      ##inserting a df inside each list with the missing species in the Flora Brazil  
+      list_fam_IPNI[[i]] = ipni_present
+    }
+  }
+  
+###removing null elements
+  list_fam_IPNI = list_fam_IPNI[-which(sapply(list_fam_IPNI, is.null))]
+
+#####collapsing the list in a df
+  df_ipni_families <- do.call("rbind.fill", list_fam_IPNI) %>% 
+           dplyr::select(tidyselect::any_of(c("name", "family", "genus", 
+                                              "species",
+                    "hybrid",
+                    "rank", "reference", 
+                    "publication", "publicationYear",
+                    
+                    "distribution","id", "bhlLink",
+                    "remarks")))%>% 
+    dplyr::mutate(url = paste0("www.ipni.org/n/", id))
+  ##working with the columns
+  df_ipni_families$citationType <- "tax_nov"
+  df_ipni_families$source <- "IPNI"
+  
+  ##obtaining the doi
+  df_ipni_families$doi <- ifelse(str_detect(df_ipni_families$remarks,
+                                            "doi:[^\\s]+"), 
+                            paste0("https://doi.org/",
+                                   str_extract(df_ipni_families$remarks,
+                                               "(?<=doi:)[^\\s]+")), NA)
+                               
+  
+  rownames(df_ipni_families) <- NULL
+
+  ##eliminating duplicated species
+  if(sum(duplicated(df_ipni_families$name)) == 0){
+    df_ipni_families
+  } else {
+    df_ipni_families <- df_ipni_families[-which(duplicated(df_ipni_families$name)),]
+  }
+  
+  
+
+
+##removing hybrid species
+  df_ipni_families <- df_ipni_families %>% dplyr::filter(hybrid == "FALSE")
+
+##removing hybrid column
+  df_ipni_families <- df_ipni_families %>% dplyr::select(-hybrid)
+
+return(df_ipni_families)
+
+}
+
