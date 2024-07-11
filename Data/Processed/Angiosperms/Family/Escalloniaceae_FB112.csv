@@ -1,4 +1,4 @@
-name,family,genus,species,rank,reference,publication,publicationYear,distribution,id,bhlLink,remarks,url,citationType,source,doi
-Escallonia jordanensis,Escalloniaceae,Escallonia,jordanensis,spec.,Willdenowia 1: 341. 1956 ,Willdenowia,1956,Brazil (Southern America),97122-2,NA,NA,www.ipni.org/n/97122-2,tax_nov,IPNI,NA
-Escallonia ledifolia,Escalloniaceae,Escallonia,ledifolia,spec.,Gatt. Escallonia 58(2): 88. 1968 Die Gattung Escallonia,Gatt. Escallonia,1968,"Santa Catarina (Brazil, Southern America)",97125-2,NA,NA,www.ipni.org/n/97125-2,tax_nov,IPNI,NA
-Escallonia petrophila,Escalloniaceae,Escallonia,petrophila,spec.,Willdenowia 1: 342. 1956 ,Willdenowia,1956,"Rio Grande do Sul (Brazil, Southern America)",97143-2,NA,NA,www.ipni.org/n/97143-2,tax_nov,IPNI,NA
+name_FFB,id_FFB,name_IPNI,id_IPNI,family,genus,species,rank,reference,publication,publicationYear,distribution,bhlLink,remarks,url,citationType,source,doi
+Escallonia jordanensis,599976,Escallonia jordanensis,97122-2,Escalloniaceae,Escallonia,jordanensis,spec.,Willdenowia 1: 341. 1956 ,Willdenowia,1956,Brazil (Southern America),NA,NA,www.ipni.org/n/97122-2,tax_nov,IPNI,NA
+Escallonia ledifolia,7740,Escallonia ledifolia,97125-2,Escalloniaceae,Escallonia,ledifolia,spec.,Gatt. Escallonia 58(2): 88. 1968 Die Gattung Escallonia,Gatt. Escallonia,1968,"Santa Catarina (Brazil, Southern America)",NA,NA,www.ipni.org/n/97125-2,tax_nov,IPNI,NA
+Escallonia petrophila,7743,Escallonia petrophila,97143-2,Escalloniaceae,Escallonia,petrophila,spec.,Willdenowia 1: 342. 1956 ,Willdenowia,1956,"Rio Grande do Sul (Brazil, Southern America)",NA,NA,www.ipni.org/n/97143-2,tax_nov,IPNI,NA

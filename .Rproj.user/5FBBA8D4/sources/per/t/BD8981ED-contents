@@ -32,6 +32,7 @@ BHL_function <- function(df){
   ##removing hifen
   plants_hifen$taxon_name =  stringr::str_replace(plants_hifen$taxon_name, 
                                                           "-", "")
+  
   ## joining datasets 
   plants_bra <- rbind(plants_bra, plants_hifen)
   
@@ -63,19 +64,43 @@ BHL_function <- function(df){
       print(e)
     })
     
-    ##IPNI species present in Flora de Brasil
-    ipni_present = ipni_df[which(ipni_df$name %in% plants_bra$taxon_name), ]
     
     
-  
     ##if else statement for not saving empty dfs
-    if(dim(ipni_present)[1] == 0){
+    if(dim(ipni_df)[1] == 0){
       print("No species present in IPNI")
       
       list_fam_IPNI[[i]] = NULL
       
     } else{
+      ##IPNI species present in Flora de Brasil
+      ipni_present = ipni_df[which(ipni_df$name %in% plants_bra$taxon_name), ] %>%
+        dplyr::rename(name_IPNI = name, 
+                      id_IPNI = id)
       
+      ##eliminating duplicated species
+      if(sum(duplicated(ipni_present$name_IPNI)) == 0){
+        ipni_present
+      } else {
+        ipni_present <- ipni_present[-which(duplicated(ipni_present$name_IPNI)),]
+      }
+      
+      
+      ##subset of the FFB DF
+      FFB_df <- plants_bra %>% filter(taxon_name %in% ipni_present$name_IPNI) %>% 
+        select(taxon_name, ID) %>% 
+        dplyr::rename(name_FFB = taxon_name,
+                      id_FFB = ID)
+      
+      ##eliminating duplicated species
+      if(sum(duplicated(FFB_df$name_FFB)) == 0){
+        FFB_df
+      } else {
+        FFB_df <- FFB_df[-which(duplicated(FFB_df$name_FFB)),]
+      }
+      
+      ##binding and ordering columns
+      ipni_present <- cbind(FFB_df, ipni_present) 
       ##inserting a df inside each list with the missing species in the Flora Brazil  
       list_fam_IPNI[[i]] = ipni_present
     }
@@ -86,15 +111,17 @@ BHL_function <- function(df){
 
 #####collapsing the list in a df
   df_ipni_families <- do.call("rbind.fill", list_fam_IPNI) %>% 
-           dplyr::select(tidyselect::any_of(c("name", "family", "genus", 
-                                              "species",
+           dplyr::select(tidyselect::any_of(c("name_FFB", "id_FFB",
+                    "name_IPNI", "id_IPNI", "family", "genus", 
+                                "species",
                     "hybrid",
                     "rank", "reference", 
                     "publication", "publicationYear",
                     
-                    "distribution","id", "bhlLink",
+                    "distribution", "bhlLink",
                     "remarks")))%>% 
-    dplyr::mutate(url = paste0("www.ipni.org/n/", id))
+    dplyr::mutate(url = paste0("www.ipni.org/n/", id_IPNI))
+  
   ##working with the columns
   df_ipni_families$citationType <- "tax_nov"
   df_ipni_families$source <- "IPNI"

@@ -1,2 +1,2 @@
-name,family,genus,species,rank,reference,publication,publicationYear,distribution,id,bhlLink,remarks,url,citationType,source,doi
-Tacca ulei,Taccaceae,Tacca,ulei,spec.,"Pflanzenr. (Engler) [Heft 92] 4, Fam. 42: 22. 1928 ",Pflanzenr. (Engler),1928,Brazil (Southern America),248930-2,NA,NA,www.ipni.org/n/248930-2,tax_nov,IPNI,NA
+name_FFB,id_FFB,name_IPNI,id_IPNI,family,genus,species,rank,reference,publication,publicationYear,distribution,bhlLink,remarks,url,citationType,source,doi
+Tacca ulei,88139,Tacca ulei,248930-2,Taccaceae,Tacca,ulei,spec.,"Pflanzenr. (Engler) [Heft 92] 4, Fam. 42: 22. 1928 ",Pflanzenr. (Engler),1928,Brazil (Southern America),NA,NA,www.ipni.org/n/248930-2,tax_nov,IPNI,NA
